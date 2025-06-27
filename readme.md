@@ -16,24 +16,47 @@ Runtime customizado para simular a execução local de funções AWS Lambda em P
 
 ## 1 - Instalação
 
-Siga os passos abaixo para instalar e executar o ambiente local:
+### 1.1 Clone o repositório
 
 ```bash
-# 1.1 Clone o repositório
 git clone https://github.com/luan-tavares/lambda-aws-runtime-php
+```
 
-# 1.2 Entre no diretório do projeto Laravel
+---
+
+### 1.2 Entre no diretório do projeto Laravel
+
+```bash
 cd lambda-aws-runtime-php/src
+```
 
-# 1.3 Instale as dependências PHP
+---
+
+### 1.3 Instale as dependências PHP
+
+```bash
 composer install
+```
 
-# 1.4 Volte para a raiz da runtime
+---
+
+### 1.4 Volte para a raiz da runtime
+
+```bash
 cd ..
+```
 
-# 1.5 Construa a imagem Docker
+---
+
+### 1.5 Construa a imagem Docker
+
+```bash
 docker compose build
-# ou
+```
+
+**ou**
+
+```bash
 docker-compose build
 ```
 
