@@ -1,0 +1,22 @@
+services:
+  lambda-dev:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    env_file: src/.env
+    restart: unless-stopped
+    environment:
+      - LAMBDA_TASK_ROOT=/var/task
+      - LAMBDA_RUNTIME_DIR=/var/runtime
+      - AWS_EXECUTION_ENV=AWS_Lambda_Image
+      - _HANDLER=/var/runtime/bootstrap
+      - DEV_MEMORY_MB=256
+    volumes:
+      - ./src:/var/task
+      - vendor:/var/task/vendor
+    ports:
+      - "9001:9001"
+    command: [ "php","/var/task/runtime/watch.php" ]
+
+volumes:
+  vendor:
