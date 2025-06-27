@@ -1,19 +1,19 @@
 #!/usr/bin/env php
 <?php
 
-use Runtime\HandlerExecute;
-use Runtime\TimestampLastFileUpdated;
+use Runtime\Log;
+use Swoole\Timer;
 use Swoole\Http\Server;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
-use Swoole\Timer;
+use Runtime\HandlerExecute;
+use Runtime\TimestampLastFileUpdated;
 
 $dir = getenv("LAMBDA_TASK_ROOT") ?? "..";
 
 require $dir . '/vendor/autoload.php';
 
 $PORT = 9001;
-
 
 $lastModified = TimestampLastFileUpdated::get($dir);
 
@@ -40,14 +40,14 @@ $timerId = Timer::tick(1000, function () use (&$lastModified, $dir, &$timerId) {
     $current =  TimestampLastFileUpdated::get($dir);
 
     if ($current > $lastModified) {
-        fwrite(STDERR, "----------------------------------\n");
-        fwrite(STDERR, "🔁 Detecção de mudança em arquivos. Matando processo para hot reload...\n");
+        Log::write("----------------------------------");
+        Log::write("🔁 Detecção de mudança em arquivos. Matando processo para hot reload...");
         Timer::clear($timerId); // 🛑 Impede múltiplas execuções
         posix_kill(posix_getpid(), SIGTERM);
     }
 });
 
-echo "🚀 Swoole ouvindo em http://localhost:$PORT\n";
+Log::write("🚀 Swoole ouvindo em http://localhost:$PORT");
 $server->start();
 
 function runWorkerDirect(array $payload): array
@@ -64,8 +64,8 @@ function runWorkerDirect(array $payload): array
         'lambda-runtime-aws-request-id' => $requestId
     ];
 
-    fwrite(STDERR, "----------------------------------\n");
-    fwrite(STDERR, "START RequestId: $requestId Version: \$LATEST\n");
+    Log::write("----------------------------------");
+    Log::write("START RequestId: $requestId Version: \$LATEST");
 
     try {
         $result = HandlerExecute::handle($payload, $headers);
@@ -76,13 +76,13 @@ function runWorkerDirect(array $payload): array
         $memoryUsedBytes = memory_get_usage(true);
         $memoryUsedMb = round($memoryUsedBytes / (1024 * 1024), 2);
 
-        fwrite(STDERR, "END RequestId: $requestId\n");
-        fwrite(STDERR, "REPORT RequestId: $requestId Duration: " . number_format($duration, 2) . " ms Billed Duration: $billed ms Memory Size: $MEMORY_SIZE_MB MB Max Memory Used: $memoryUsedMb MB\n");
+        Log::write("END RequestId: $requestId");
+        Log::write("REPORT RequestId: $requestId Duration: " . number_format($duration, 2) . " ms Billed Duration: $billed ms Memory Size: $MEMORY_SIZE_MB MB Max Memory Used: $memoryUsedMb MB");
 
         return is_array($result) ? $result : ['result' => $result];
     } catch (Throwable $e) {
-        fwrite(STDERR, "❌ Erro ao executar handler: {$e->getMessage()}\n");
-        fwrite(STDERR, "END RequestId: $requestId\n");
+        Log::write("❌ Erro ao executar handler: {$e->getMessage()}");
+        Log::write("END RequestId: $requestId");
         return ['error' => 'Erro interno no handler'];
     }
 }

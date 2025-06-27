@@ -6,6 +6,7 @@ services:
     env_file: src/.env
     restart: unless-stopped
     environment:
+      - IS_DEV=true
       - LAMBDA_TASK_ROOT=/var/task
       - LAMBDA_RUNTIME_DIR=/var/runtime
       - AWS_EXECUTION_ENV=AWS_Lambda_Image

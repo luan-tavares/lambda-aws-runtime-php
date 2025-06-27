@@ -3,6 +3,7 @@
 namespace Runtime;
 
 use Throwable;
+use Runtime\Log;
 
 class HandlerExecute
 {
@@ -19,11 +20,11 @@ class HandlerExecute
 
             $durationMs = ($end - $start) / 1e6;
 
-            file_put_contents('php://stderr', "⏱️ Handler executado em " . number_format($durationMs, 2) . "ms\n");
+            Log::write("⏱️ Handler executado em " . number_format($durationMs, 2) . "ms");
 
             return is_array($result) ? $result : ['result' => $result];
         } catch (Throwable $e) {
-            file_put_contents('php://stderr', "⚠️ Falha ao executar handler: " . $e->getMessage() . "\n");
+            Log::write("⚠️ Falha ao executar handler: " . $e->getMessage());
             return ['batchItemFailures' => []];
         }
     }
