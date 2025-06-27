@@ -24,7 +24,7 @@ git clone https://github.com/luan-tavares/lambda-aws-runtime-php
 
 ---
 
-### 1.2 Entre no diretório do projeto Laravel
+### 1.2 Entre no diretório do projeto
 
 ```bash
 cd lambda-aws-runtime-php/src
